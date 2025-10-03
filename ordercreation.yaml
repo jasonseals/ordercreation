@@ -1,0 +1,1295 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Order Creation
+  description: "This API requires the use of CustomerFusion. By leveraging CustomerFusion, this API can efficiently post order creations directly to your LoadMaster or PowerBroker Transportation Management System (TMS). CustomerFusion acts as a bridge, ensuring that the data is accurately transmitted and received, thus enabling a smooth and automated order creation process.\r\n\r\n### Getting started \r\nIf you want to try out the API now, try our sandbox by filling out the following information:\r\n|Header|Value|\r\n|------|-----|\r\n|Authorization (Auth/Token)|[Get quick access token here](https://controlhub.mcleodsoftware.com/?action=Sandbox)\r\n|customerId|1CHC|\r\n|X-Api-Key|[Get a trial key here](https://innovationhub.mcleodsoftware.com/apis)\r\n|X-Mcld-Tenant|2|\r\n|X-Datafusion-Profile|(blank)|\r\n\r\n### Tips\r\nChange the BOL and Consignee Reference Numbers between Order Requests to make each more unique. While we have a request ID to identify an order request, many companies identify order by Consignee Reference Number or Bill Of Lading Number.\r\n\r\nHere is a list of [additional reference numbers and qualifier codes](https://innovationhub.mcleodsoftware.com/OrderCreationDataCodeLists).\r\n### Set UP:\r\nThe below fields in the contract may be populated with either the LoadMaster/PowerBroker master file values or the partner value.\r\n##### Fields:\r\n- Locations\r\n- Bill-tos (customer ID)\r\n- Commodities\r\n- Trailer Types\r\n- Charges\r\n- Revenue codes\r\n- Order Type\r\n- Allocation Code\r\n#### Master File Values:\r\nIf using master file values, the customer should provide the vendor with the LoadMaster/PowerBroker values.\r\n#### Partner Values:\r\nIf using partner values, the customer should add the cross reference to the Order Create profile within LoadMaster/PowerBroker. The vendor should provide unique partner value codes. For example, if multiple customers have the same values for a location, the customer could be concatenated in front of the value when sending in the data, to ensure uniqueness.\r\n- ABC-Grocery-LOC123\r\n- XYZ-Grocery-LOC123\r\n### PROCESSING:\r\nThese fields in the contract are required for order creation. If these are not provided, the data will still load into LoadMaster/PowerBroker, but will require manual updates to complete order creation.\r\n- collectionMethod \r\n - location: under Rating\r\n- customerID\r\n - passed in the API call path parameter\r\nIf the customer ID being passed in the API call is not found within the LoadMaster/PowerBroker master file or as a cross reference on the tender profile, the tender will create, but the LoadMaster/PowerBroker user will need to follow these steps to finish order creation:\r\n-\tSet up the bill-to in LoadMaster/PowerBroker.\r\n-\tManually add the bill-to when creating the order from the tender.\r\n-\tAdd the cross reference to the tender profile, for future processing.\r\n\r\nSome LoadMaster/PowerBroker customers may be set to not require a bill-to for order creation, allowing the tender and order to create automatically, even if no matching bill-to is present.\r\n\r\nCustomers may have other internal settings that could prevent auto-creation of the order, such as allocation, modifications, etc.\r\n\r\nIf seconds and milliseconds are provided in the time, the API does not process those and therefore those values will not be returned in the time.\r\n\r\nThere are two scenarios for handling time zones:\r\n\r\n First, for a stop, the timezone offet is expected to be correct. We will convert the offset to GMT and apply that time to the correct time zone of the city. So if your offset is incorrect, you may be returned a different time than you sent in.\r\n\r\n Second, for not stop times, we will convert the offset to GMT and apply the correct time and offset to the customers server time.\r\n The time returned will be in the offset of customer's server.\r\n\r\n### Overview\r\nThis endpoint provides a comprehensive solution capable of creating orders within the Transportation Management System (TMS). It empowers users, including software vendors, to develop AI-driven systems that can read emails and other unstructured data, ultimately leading to the automatic creation of orders. This endpoint efficiently processes incoming messages and can automatically accept tenders, thus streamlining the order placement process."
+servers:
+  - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+    description: Sandbox
+  - url: 'https://api.mcleodsoftware.com/ordercreation'
+    description: Live
+paths:
+  '/customers/{customerId}/order-requests':
+    post:
+      summary: Create an Order Request
+      description: "### Getting started \r\nIf you want to try out the API now, try our sandbox by filling out the following information:\r\n|Header|Value|\r\n|------|-----|\r\n|Authorization (Auth/Token)|[Get quick access token here](https://controlhub.mcleodsoftware.com/?action=Sandbox)\r\n|customerId|1CHC|\r\n|X-Api-Key|[Get a trial key here](https://innovationhub.mcleodsoftware.com/apis)\r\n|X-Mcld-Tenant|2|\r\n|X-Datafusion-Profile|(blank)|\r\n\r\n### Tips\r\nChange the BOL and Consignee Reference Numbers between Order Requests to make each more unique. While we have a request ID to identify an order request, many companies identify order by Consignee Reference Number or Bill Of Lading Number.\r\n\r\nHere is a list of [additional reference numbers and qualifier codes](https://innovationhub.mcleodsoftware.com/OrderCreationDataCodeLists).\r\n### Set UP:\r\nThe below fields in the contract may be populated with either the LoadMaster/PowerBroker master file values or the partner value.\r\n##### Fields:\r\n- Locations\r\n- Bill-tos (customer ID)\r\n- Commodities\r\n- Trailer Types\r\n- Charges\r\n- Revenue codes\r\n- Order Type\r\n- Allocation Code\r\n#### Master File Values:\r\nIf using master file values, the customer should provide the vendor with the LoadMaster/PowerBroker values.\r\n#### Partner Values:\r\nIf using partner values, the customer should add the cross reference to the Order Create profile within LoadMaster/PowerBroker. The vendor should provide unique partner value codes. For example, if multiple customers have the same values for a location, the customer could be concatenated in front of the value when sending in the data, to ensure uniqueness.\r\n- ABC-Grocery-LOC123\r\n- XYZ-Grocery-LOC123\r\n### PROCESSING:\r\nThese fields in the contract are required for order creation. If these are not provided, the data will still load into LoadMaster/PowerBroker, but will require manual updates to complete order creation.\r\n- collectionMethod \r\n - location: under Rating\r\n- customerID\r\n - passed in the API call path parameter\r\nIf the customer ID being passed in the API call is not found within the LoadMaster/PowerBroker master file or as a cross reference on the tender profile, the tender will create, but the LoadMaster/PowerBroker user will need to follow these steps to finish order creation:\r\n-\tSet up the bill-to in LoadMaster/PowerBroker.\r\n-\tManually add the bill-to when creating the order from the tender.\r\n-\tAdd the cross reference to the tender profile, for future processing.\r\n\r\nSome LoadMaster/PowerBroker customers may be set to not require a bill-to for order creation, allowing the tender and order to create automatically, even if no matching bill-to is present.\r\n\r\nCustomers may have other internal settings that could prevent auto-creation of the order, such as allocation, modifications, etc.\r\n\r\nIf seconds and milliseconds are provided in the time, the API does not process those and therefore those values will not be returned in the time.\r\n\r\nThere are two scenarios for handling time zones:\r\n\r\n First, for a stop, the timezone offet is expected to be correct. We will convert the offset to GMT and apply that time to the correct time zone of the city. So if your offset is incorrect, you may be returned a different time than you sent in.\r\n\r\n Second, for not stop times, we will convert the offset to GMT and apply the correct time and offset to the customers server time.\r\n The time returned will be in the offset of customer's server.\r\n\r\n### Overview\r\nThis endpoint provides a comprehensive solution capable of creating orders within the Transportation Management System (TMS). It empowers users, including software vendors, to develop AI-driven systems that can read emails and other unstructured data, ultimately leading to the automatic creation of orders. This endpoint efficiently processes incoming messages and can automatically accept tenders, thus streamlining the order placement process."
+      operationId: createOrderRequest
+      parameters:
+        - $ref: '#/components/parameters/X-Mcld-Fusion-Profile'
+        - name: customerId
+          in: path
+          description: Unique identifier for the customer requesting the shipment.
+          required: true
+          schema:
+            type: string
+            example: '1CHC'
+          examples:
+            default:
+              value: '1CHC'
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+        
+      requestBody:
+        description: This is the request body used to add a new order within the system.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+            examples:
+              Example 1:
+                value:
+                  createdDate: 2024-07-05T08:05-05:00
+                  palletCount: 50
+                  palletsRequired: true
+                  revenueCode: AL
+                  orderType: REG
+                  allocationCode: EricTest
+                  operationsUser: test
+                  orderValue:
+                    highValue: false
+                    value: 1235.56
+                    currency: USD
+                  commodity:
+                    name: Food
+                    id: DAIRY
+                    hazmat: false
+                    hazmatId: ''
+                    temperatureRange:
+                      low: 32
+                      high: 40
+                  equipmentDetails:
+                    preload: true
+                    trailerId: ''
+                    tractorType: ''
+                    trailerType: R
+                  roundTrip: false
+                  customer:
+                    name: A customer name
+                    phone: 555-555-5785
+                    email: my@email.com
+                    website: https://somerandomplace.com
+                  reply:
+                    respondByDate: 2024-06-15T16:45-05:00
+                  orderReferenceNumbers:
+                    bol: '202410041239'
+                    sealNumber: '32145'
+                    consigneeRefno: '202410041239'
+                    shipment_id: null
+                  rating:
+                    collectionMethod: PrePaid
+                    rateType: Flat
+                    billDistance: 1235
+                    unitDescription: gadgets
+                    units: 1
+                    rate: 1235
+                    linehaulCharge:
+                      value: 1235
+                      currency: USD
+                    pieces: 555
+                    weight: 1500
+                    otherChargeTotal:
+                      value: 0
+                      currency: USD
+                    otherCharges:
+                      - description: Base surcharge
+                        units: 20
+                        rate: 2
+                        code: BS
+                        charge:
+                          value: 45
+                          currency: USD
+                      - description: Fuel charge
+                        units: 100
+                        rate: 1
+                        code: FUE
+                        charge:
+                          value: 100
+                          currency: USD
+                  stops:
+                    - locationId: CAREIN
+                      locationName: Tranflow Split
+                      address: 1105 Santo Tomas St
+                      cityName: Birmingham
+                      state: AL
+                      zip: ' 35124'
+                      scheduledArrivalEarly: 2024-10-19T17:00-04:00
+                      scheduledArrivalLate: 2024-10-19T17:00-04:00
+                      stopType: Pickup
+                      cases: '20'
+                      weight: 5231
+                      palletsIn: 0
+                      palletsOut: 0
+                      referenceNumbers:
+                        - value: '65487'
+                          qualifier: ZZ
+                          pieces: 7778
+                          weight: 654789
+                        - value: '123456'
+                          qualifier: PO
+                          pieces: 784
+                          weight: 3214
+                      contact:
+                        name: Sam
+                        phone: 555-555-5785
+                      notes:
+                        - comments: Sam I am
+                          type: DispatchComment
+                          sequence: ''
+                        - comments: I do not like green eggs and ham
+                          type: OtherComment
+                          sequence: ''
+                    - locationId: SIMJWI
+                      locationName: Rosenburg Venture 11
+                      address: 235 Commerce
+                      address2: ''
+                      cityName: Jacksonville
+                      state: FL
+                      zip: ' 32034'
+                      sequence: ''
+                      seal: ''
+                      scheduledArrivalEarly: 2024-10-20T17:00-05:00
+                      scheduledArrivalLate: 2024-10-20T20:00-05:00
+                      stopType: Delivery
+                      volume: 0
+                      cases: '3336'
+                      weight: 654789
+                      referenceNumbers:
+                        - value: '4456'
+                          qualifier: ZZ
+                          pieces: 55
+                          weight: 3214
+                        - value: '4567'
+                          qualifier: BM
+                          pieces: 202
+                          weight: 98745
+                      contact:
+                        name: Bob
+                        phone: 205-867-5309
+                      notes:
+                        - comments: Hi this is Bob
+                          type: OtherComment
+                          sequence: ''
+                        - comments: Bob again, Hi
+                          type: DispatchComment
+                          sequence: ''           
+      responses:
+        '200':
+          description: 'The request URL returns a successful response, indicating an order request has been replaced with a new version.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRequest'
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/Response-X-Correlation-Id'
+            X-Mcld-Client:
+              $ref: '#/components/headers/Response-X-Mcld-Client'
+            X-Mcld-Request-Duration:
+              $ref: '#/components/headers/Response-X-Mcld-Request-Duration'
+            X-Mcld-Request-Time:
+              $ref: '#/components/headers/Response-X-Mcld-Request-Time'
+            X-Mcld-Subject:
+              $ref: '#/components/headers/Response-X-Mcld-Subject'
+        '201':
+          description: 'The request URL returns a successful response, indicating a new order has been created.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRequest'
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/Response-X-Correlation-Id'
+            X-Mcld-Client:
+              $ref: '#/components/headers/Response-X-Mcld-Client'
+            X-Mcld-Request-Duration:
+              $ref: '#/components/headers/Response-X-Mcld-Request-Duration'
+            X-Mcld-Request-Time:
+              $ref: '#/components/headers/Response-X-Mcld-Request-Time'
+            X-Mcld-Subject:
+              $ref: '#/components/headers/Response-X-Mcld-Subject'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          $ref: '#/components/responses/Standard-403'
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:create'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/ordercreation'
+          description: Live
+  '/customers/{customerId}/order-requests/{orderRequestId}':
+    put:
+      summary: Update Order Request
+      description: "### Getting started\r\nIf you want to try out the API now, try our sandbox by filling out the following information:\r\n|Header|Value|\r\n|------|-----|\r\n|Authorization (Auth/Token)|[Get quick access token here](https://controlhub.mcleodsoftware.com/?action=Sandbox)\r\n|customerId|1CHC|\r\n|X-Api-Key|[Get a trial key here](https://innovationhub.mcleodsoftware.com/apis)\r\n|X-Mcld-Tenant|2|\r\n|X-Datafusion-Profile|(blank)|\r\n\r\n### Tips\r\nChange the BOL and Consignee Reference Numbers between Order Requests to make each more unique. While we have a request ID to identify an order request, many companies identify order by Consignee Reference Number or Bill Of Lading Number.\r\n\r\n### Overview\r\nThis endpoint provides a solution for updating orders within the Transportation Management System (TMS). It allows users, including software vendors, to efficiently modify orders as necessary. AI-driven systems can leverage this endpoint to update orders based on new information from emails and other unstructured data. The system processes incoming requests and automatically applies the necessary modifications, ensuring accurate and up-to-date order management."
+      operationId: createOrUpdateOrderRequest
+      parameters:
+        - $ref: '#/components/parameters/X-Mcld-Fusion-Profile'
+        - name: customerId
+          in: path
+          description: Unique identifier for the customer requesting the shipment.
+          required: true
+          schema:
+            type: string
+            example: '13'
+          examples:
+            default:
+              value: '13'
+        - name: orderRequestId
+          in: path
+          description: Unique identifier of the order associated with the customer.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+      requestBody:
+        description: This is the request body used to modify an existing order or create a new order within the system.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '200':
+          description: 'The request URL returns a successful response with status code 200 (OK), indicating an order request has been updated successfully.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRequest'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          $ref: '#/components/responses/Standard-403'
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:create'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/ordercreation'
+          description: Live
+    delete:
+      summary: Cancel Order Request
+      description: 'This endpoint provides a solution for cancelling orders within the Transportation Management System (TMS). It allows users, including software vendors, to efficiently modify orders as necessary. AI-driven systems can leverage this endpoint to update orders based on new information from emails and other unstructured data. The system processes incoming requests and automatically applies the necessary modifications, ensuring accurate and up-to-date order management.'
+      operationId: cancelOrderRequest
+      parameters:
+        - $ref: '#/components/parameters/X-Mcld-Fusion-Profile'
+        - name: customerId
+          in: path
+          description: Unique identifier for the customer requesting the shipment.
+          required: true
+          schema:
+            type: string
+            example: '13'
+          examples:
+            default:
+              value: '13'
+        - name: orderRequestId
+          in: path
+          description: Unique identifier of the order associated with the customer.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+      responses:
+        '200':
+          description: 'The request URL returns a successful response with status code 200 (OK), indicating an order request cancellation has been submitted for processing.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRequest'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          $ref: '#/components/responses/Standard-403'
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:delete'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/ordercreation'
+          description: Live
+    get:
+      summary: Get an Order Detail
+      description: "### Getting started\r\nIf you want to try out the API now, try our sandbox by filling out the following information:\r\n|Header|Value|\r\n|------|-----|\r\n|Authorization (Auth/Token)|[Get quick access token here](https://controlhub.mcleodsoftware.com/?action=Sandbox)\r\n|customerId|1CHC|\r\n|X-Api-Key|[Get a trial key here](https://innovationhub.mcleodsoftware.com/apis)\r\n|X-Mcld-Tenant|2|\r\n|X-Datafusion-Profile|(blank)|\r\n\r\n### Overview\r\nThis endpoint provides a detailed view of a specific order within the Transportation Management System (TMS), allowing users to retrieve comprehensive order information. It efficiently fetches and returns details like status, customer information, order value, commodity details, equipment details, stops, and other necessary details of the order."
+      operationId: GetOrderDetail
+      parameters:
+        - $ref: '#/components/parameters/X-Mcld-Fusion-Profile'
+        - name: customerId
+          in: path
+          description: Unique identifier for the customer requesting the shipment.
+          required: true
+          schema:
+            type: string
+            example: '13'
+          examples:
+            default:
+              value: '13'
+        - name: orderRequestId
+          in: path
+          description: Unique identifier of the order associated with the customer.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+      responses:
+        '200':
+          description: 'The request URL returns a successful response with status code 200 (OK), providing a detailed view of a specific order for an order request.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRequest'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          $ref: '#/components/responses/Standard-403'
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:create'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/ordercreation'
+          description: Live
+     
+  '/customers':     
+    get:
+      summary: Get Customers
+      description: Returns a list of customers matching the optional filters. Requires 'orderrequests:codelookups'scope.
+      operationId: GetCustomers
+      parameters:
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+        - name: code
+          in: query
+          description: Unique identifier for the customer search.
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Name for the customer search.
+          required: false
+          schema:
+            type: string
+        - name: address
+          in: query
+          description: Address for the customer search.
+          required: false
+          schema:
+            type: string
+        - name: zip
+          in: query
+          description: Postal/zip code for the customer.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'The request URL returns a successful response with status code 200 (OK), providing a detailed view of specific customer information.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          description: Forbidden - missing 'orderrequests:codelookups' scope.
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:codelookups'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/ordercreation'
+          description: Live
+          
+  '/locations':     
+    get:
+      summary: Get Locations
+      description: Returns a list of locations matching the optional filters. Requires 'orderrequests:codelookups' scope.
+      operationId: GetLocations
+      parameters:
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+        - name: id
+          in: query
+          description: A unique identifier for the location.
+          required: false
+          schema:
+            type: string
+        - name: cityId
+          in: query
+          description: The unique ID of the city.
+          required: false
+          schema:
+            type: string
+        - name: locationName
+          in: query
+          description: The name of the location.
+          required: false
+          schema:
+            type: string
+        - name: postalCode
+          in: query
+          description: The postal code where the location is situated.
+          required: false
+          schema:
+            type: string       
+      responses:
+        '200':
+          description: A list of locations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/location'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          description: Forbidden - missing 'orderrequests:codelookups' scope.
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:codelookups'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/location'
+          description: Live
+          
+  '/commodities':     
+    get:
+      summary: Get Commodities
+      description: Returns a list of commodities matching the optional filters. Requires 'orderrequests:codelookups' scope.
+      operationId: GetCommodities
+      parameters:
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/X-Api-Key'
+        - $ref: '#/components/parameters/X-Mcld-Tenant'
+        - $ref: '#/components/parameters/X-Correlation-Id'
+        - name: code
+          in: query
+          description: Unique identifier for the commodity search.
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Name for the commodity search.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'The request URL returns a successful response with status code 200 (OK), providing a detailed view of specific commodity information.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commodity'
+        '400':
+          $ref: '#/components/responses/Standard-400'
+        '401':
+          $ref: '#/components/responses/Standard-401'
+        '403':
+          description: Forbidden - missing 'orderrequests:codelookups' scope.
+        '404':
+          $ref: '#/components/responses/Standard-404'
+        '405':
+          $ref: '#/components/responses/Standard-405'
+        '500':
+          $ref: '#/components/responses/Standard-500'
+        '501':
+          $ref: '#/components/responses/Standard-501'
+        '502':
+          $ref: '#/components/responses/Standard-502'
+        '503':
+          $ref: '#/components/responses/Standard-503'
+        '504':
+          $ref: '#/components/responses/Standard-504'
+      security:
+        - OAuth:
+            - 'orderrequests:codelookups'
+      servers:
+        - url: 'https://api.mcleodsoftware.com/ordercreation-sandbox'
+          description: Sandbox
+        - url: 'https://api.mcleodsoftware.com/commodity'
+          description: Live
+
+components:
+  parameters:
+    X-Mcld-Fusion-Profile:
+      name: X-Mcld-Fusion-Profile
+      in: header
+      description: This is a data fusion profile used by the tenant to configure how order requests are processed.
+      required: false
+      schema:
+        type: string
+        example: special_profile
+    X-Correlation-Id:
+      name: X-Correlation-Id
+      in: header
+      description: 'A unique identifier that can be fed in to identify orchestrations between the client and server.  You can put any string here and that would correlate with the operation surrounding this call.  If a correlation ID is not supplied, the service will assign a random one that will be available on the response.'
+      required: false
+      schema:
+        type: string
+        example: 493a7431-6d29-42e9-84b0
+    Authorization:
+      name: Authorization
+      in: header
+      description: Authorization token associated with the subject.
+      schema:
+        type: string
+        example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjBib2NqaVR6YVpJaHNHb01mOUMtWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1wdG04czI0ZzhuM2N6Zm9nLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJ3YWFkfEhvZThZNzRObXVtOGM1VDdtQmJpRlotbVBHenVKQkFScGdMbW85ejV0WUUiLCJhdWQiOlsiaHR0cHM6Ly9hcGkubWNsZW9kc29mdHdhcmUuY29tIiwiaHR0cHM6Ly9kZXYtcHRtOHMyNGc4bjNjemZvZy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjkyODAwNTE4LCJleHAiOjE2OTI4ODY5MTgsImF6cCI6IjgxdkFtNnV5V2RwODBWTFI4WmhTeDYybVU0QmNVd3dJIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB0cmFja2FuZHRyYWNlOnJlYWQgdHJhY2thbmR0cmFjZTpyZXZlbnVlIG1jbGVvZGFjY2VzczoqIG1jbGVvZGFjY2VzczppbnRlcm5hbCJ9.ETr_aqcIaNdUO7T87e81OgBARiI0C4u1N8uowNBx0IPQ2fPyWsjHUhpNrleGadqE9JePDBd2m01OZVe0rM9W8SeUGI1Keohv57fCsLTibJMtPqJSEbD0MZqqBgAVFdVfes05bdlRXEXusCe0w3sLq3ouCQGbJSmMoQnbmyLaWJ-6IRqw-Y_kOR410zVB_eJiQEfd6lQbWWg8kSN2BTSPPFWkWtLvDZ36rg_mwGKlVb3AvmGKdR2e6qSnLeWoBpAmjWJaXEClhOJ_QIVSoeYi6jo1Ub-nbZOke2yG9V1KNHbvp01xsa-wb5qyTsXNo4fv0uyjPdyjl-qywJFXzabyYQ
+    X-Mcld-Tenant:
+      name: X-Mcld-Tenant
+      in: header
+      description: The tenant ID of the company that the user is associated with.  This is a required field for all API calls.
+      required: true
+      schema:
+        type: string
+        example: 123456
+    X-Api-Key:
+      name: X-Api-Key
+      in: header
+      description: 'The API key issued by Innovation Hub. This is a required field for all API calls.'
+      schema:
+        type: string
+        example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjBib2NqaVR6YVpJaHNHb01mOUMtWCJ93MiOiJodHRwczovL2Rldi1wdG04czI0ZzhuM2N6Zm9nLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJ3YW
+  securitySchemes:
+    OAuth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://api.mcleodsoftware.com/auth/authorize'
+          tokenUrl: 'https://api.mcleodsoftware.com/auth/token'
+          scopes:
+            'orderrequests:create': Create order tenders in your LoadMaster or PowerBroker system.
+            'orderrequests:codelookups': Use read-only code lookups (customers, locations, commodities) for order creation. 
+  responses:
+    Standard-400:
+      description: |-
+        ### Bad Request
+        This error is the standard catch-all for errors that have been found to be correctable on the client side.
+        #### Top reasons for Bad Request
+        * The resource was correctly located (e.g. "/orders"), but there may be required parameter information missing.
+        * One of the parameters (e.g. orders?**statusby**=Available) may be misspelled.
+        * The parameter is correct, but it is not supported by this particular operation (e.g. GET, PUT, etc).
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Bad Request error.
+    Standard-401:
+      description: |-
+        ### Unauthorized
+        In order for any API call towards a resource, such as a company's orders, to be processed, the call must be authorized by the *resource owner*, who can be either the user or a service account with access to the resource. Any time the 401/Unauthorized error is returned, it indicates that the server believes the call was not authorized.
+        #### Top reasons for Unauthorized
+        * There was no access token given on the request in the **Authorization header** specifically.
+        * Something is wrong with the access token.  (See below)
+        * The access token has expired.
+        #### Reasons why an access token is not accepted
+        * **The access token is completely invalid.**  A valid access token is the word *Bearer* followed by a long string of Base64 encoded strings.  The digits have three parts separated by periods.  You can check your access token with an online tool such as jwt.io.
+        * **The access token was not issued by McLeod Identity Services.**  All access tokens must have come from our services, even if authentication is delegated to another identity provider.
+        * **The access token was dispensed without authorization occurring.**  We only support access tokens through the Authorization Code process, also known as OAuth2's *Auth Code flow*. This requires a user or representative service account to be logged in and consent to allow a given client application access to their resources. If the user did not log in, or they logged in but refused to consent to the terms, authorization did not occur.
+
+        For more information, see our [Auth API] documentation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Unauthorized error.
+    Standard-403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Forbidden error.
+    Standard-404:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Not Found error.
+    Standard-405:
+      description: Method Not Allowed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Method Not Allowed error.
+    Standard-500:
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Server Error.
+    Standard-501:
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Not Implemented error.
+    Standard-502:
+      description: Bad Gateway
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Bad Gateway error.
+    Standard-503:
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Service Unavailable error.
+    Standard-504:
+      description: Gateway Timeout. This does NOT mean your data did not POST. Verify before re-posting.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: This should describe the reason behind the Gateway Timeout error.
+  headers:
+    Response-X-Mcld-Client:
+      schema:
+        type: string
+        example: Zw7cG6rIIdi1llzyzX4NZqVN171szAtl
+      description: The application that was used to make this call.
+      required: false
+    Response-X-Correlation-Id:
+      schema:
+        type: string
+        example: 493a7431-6d29-42e9-84b0
+      description: 'A unique identifier that can be fed in to identify orchestrations between the client and server.  You can put any string here and that would correlate with the operation surrounding this call.  If a correlation ID is not supplied, the service will assign a random one that will be available on the response.'
+      required: false
+    Response-X-Mcld-Request-Duration:
+      schema:
+        type: string
+        example: '45'
+      description: Total process time for request in milliseconds.
+      required: false
+    Response-X-Mcld-Request-Time:
+      schema:
+        type: string
+        example: '2023-08-21T13:18:30+0000'
+      description: Timestamp of when the service route was called.
+      required: false
+    Response-X-Mcld-Subject:
+      schema:
+        type: string
+        example: waad|Hoe8Y74Nmum8c5T7mBbiFZ-mPGzuJBARpgLmo9z5tYE
+      description: The user ID that requested this operation.
+      required: false
+  schemas:
+    OrderRequest:
+      type: object
+      title: OrderRequest
+      properties:
+        requestId:
+          type: string
+          description: The unique ID assigned to an order request. This is a read only field and should not be sent.         
+        operationsUser:
+          type: string
+          description: The operations user responsible for this order.
+        status:
+           type: object
+           description: 'Status field will reflect the actual status of the order, once made. This object is readonly and should not be sent in the request.'           
+           properties:
+            orderId:
+              type: string
+              description: A unique identifier of the order to be returned.           
+              example: '0261573'              
+            action:
+              type: string
+              enum:
+                - Accepted
+                - Declined
+                - PendingInput
+                - Conditional             
+              description: The code indicating the action taken in response to the order creation.              
+              example: PendingInput               
+            reason:
+              type: string
+              description: Reason the order was declined.               
+            orderCreateDate:
+              type: string
+              description: 'The date and time when the order was accepted, resulting in the creation of the actual order. This value should be in an ISO 8601 standard format, which includes the offset from UTC.'              
+              example: '1990-12-31T15:59-08:00'              
+            orderStatus: 
+              type: string
+              description: The status of the order. This object is readonly and should not be sent.
+              example: 'Available'
+              enum:
+                - Available
+                - Progress
+                - Void
+                - Delivered
+                - Quote                 
+        palletCount:
+          type: integer
+          description: Total pallet count for this order.
+        palletsRequired:
+          type: boolean
+          description: An indicator of whether pallets are required for this order.
+        orderValue:
+          type: object
+          properties:
+            highValue:
+              type: boolean
+              description: An indicator to determine if the order is of high value.
+            value:
+              type: number
+              description: Monetary value assigned to this order.
+            currency:
+              type: string
+              description: The currency used for the value.
+        commodity:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the commodity associated with the order.
+            id:
+              type: string
+              description: The unique ID for the commodity.
+            hazmat:
+              type: boolean
+              description: Indicates whether the load has hazardous materials.
+            hazmatId:
+              type: string
+              description: Unique standard UN codes.
+            temperatureRange:
+              type: object
+              properties:
+                low:
+                  type: integer
+                  description: The lowest temperature value.
+                high:
+                  type: integer
+                  description: The highest temperature value.
+        equipmentDetails:
+          type: object
+          properties:
+            preload:
+              type: boolean
+              description: Indicator for whether the trailer is preloaded.
+            trailerId:
+              type: string
+              description: The unique ID used to identify the trailer.
+            tractorType:
+              type: string
+              description: Type of tractor.
+            trailerType:
+              type: string
+              description: 'Recommend DAT values, but customer can cross reference to their own if not using DAT values.'
+            team:
+              type: boolean
+              description: Indicator for whether team drivers are required.
+              example: true
+        roundTrip:
+          type: boolean
+          description: Indicator for whether the order represents a round trip.
+          example: true
+        customer:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The name of the customer. This will go into other comment section if it's needed. Does not need to be sent if a customer ID exists.
+              example: Customer Name
+            phone:
+              type: string
+              description: The contact phone number of the customer.
+              example: '5032222677'
+            email:
+              type: string
+              description: The email address of the customer.
+              example: my@email.com
+            website:
+              type: string
+              description: The website address of the customer.
+              example: 'https://randomsite.com'
+        reply:
+          type: object
+          properties:
+            respondByDate:
+              type: string
+              description: 'The date and time by which a reply must be received to accept the load. This value should be in an ISO 8601 standard format, which includes the offset from UTC.'
+              example: '2024-12-31T15:59-08:00'
+        orderReferenceNumbers:
+          type: object
+          properties:
+            bol:
+              type: string
+              description: Bill of lading number associated with the order.
+              example: ' 4623699CB'
+            sealNumber:
+              type: string
+              description: Seal number from order.
+            consigneeRefno:
+              type: string
+              description: Consignee reference number associated with the order.
+              example: '2007372'
+            shipmentId:
+              type: string
+              description: Shipment ID associated with the order. Shipment ID associated with the order. This value is auto-generated if not sent. Auto-generated values are guaranteed to be unique and avoid duplication when multiple users are using the same profile.
+              example: '35746542'  
+        stops:
+          type: array
+          items:
+            type: object
+            properties:
+              locationId:
+                type: string
+                description: The unique ID for this location.
+              locationName:
+                type: string
+                description: Location name of this location.
+              address:
+                type: string
+                description: The primary address information for the location.
+                example: 123 Abernathy Rd
+              address2:
+                type: string
+                description: Additional address information for the location.
+                example: Suite 33
+              cityName:
+                type: string
+                description: City for this location.
+                example: Alabaster
+              state:
+                type: string
+                description: State abbreviation for this location.
+                example: AL
+              zip:
+                type: string
+                description: Postal/zip code of the location.
+                example: '35007'
+              scheduledArrivalEarly:
+                type: string
+                description: 'The scheduled early date and time of arrival at this stop, in an ISO 8601 standard format, which includes the offset from UTC.'
+                example: '1990-12-31T15:59-08:00'
+              scheduledArrivalLate:
+                type: string
+                description: 'The scheduled late date and time of arrival at this stop, in an ISO 8601 standard format, which includes the offset from UTC.'
+                example: '1990-12-31T15:59-08:00'
+              stopType:
+                type: string
+                enum:
+                  - Pickup
+                  - Delivery
+                description: Type of stop for this location.
+                example: Pickup
+              cases:
+                type: string
+                description: The number of cases picked up or delivered at this stop.
+              weight:
+                type: number
+                description: The weight of the commodity picked up or delivered at this stop.
+              volume:
+                type: integer
+                description: Volume picked up or delivered at this stop.
+              palletsIn:
+                type: integer
+                description: Number of pallets taken off of the trailer at this location.
+              palletsOut:
+                type: integer
+                description: Number of pallets loaded onto the trailer at this location.
+              referenceNumbers:
+                type: array
+                description: Reference numbers related to the stop.
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                      description: The value of the reference number.
+                    qualifier:
+                      type: string
+                      description: The reference number qualifier.
+                      example: PU
+                    pieces:
+                      type: integer
+                      description: The number of pieces for the reference number.
+                    weight:
+                      type: number
+                      description: The weight for the reference number.
+              contact:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the customer.
+                    example: John Doe
+                  phone:
+                    type: string
+                    description: The contact phone number of the customer.
+                    example: '9839022179'
+              notes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    comments:
+                      type: string
+                      description: Comment detail
+                      example: This is a test comment.
+                    type:
+                      type: string
+                      enum:
+                        - DispatchComment
+                        - BillingComment
+                        - InternalBillingComment
+                        - HotComment
+                        - OtherComment
+                      description: Type of comment.
+                      example: OtherComment
+        rating:
+          type: object
+          properties:
+            collectionMethod:
+              type: string
+              enum:
+                - PrePaid
+                - Collect
+                - ThirdParty
+                - CollectOnDelivery
+              description: How the charges for this order will be paid.
+              example: PrePaid
+            rateType:
+              type: string
+              enum:
+                - Distance
+                - CWT
+                - Flat
+                - Tons
+                - Other
+              description: Type of rating calculation applied to this order.
+              example: Distance
+            billDistance:
+              type: number
+              description: Distance to be used in calculating freight charge.
+            unitDescription:
+              type: string
+              description: Provides additional information for rate types categorized as 'Other'.
+            units:
+              type: number
+              description: Number of units.
+            rate:
+              type: number
+              description: Rate used in combination with rating units to calculate freight charges.
+              example: 20
+            linehaulCharge:
+              type: object
+              properties:
+                value:
+                  type: number
+                  description: Freight charge for the created order.
+                currency:
+                  type: string
+                  description: The currency used for the freight charge.
+            pieces:
+              type: integer
+              description: The number of pieces for the freight.
+            weight:
+              type: number
+              description: The actual weight of the freight.            
+            otherCharges:
+              type: array
+              description: Additional charges for this order.
+              items:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    description: Description of charge type.
+                  units:
+                    type: number
+                    description: Number of units of this charge type. This is a required field.
+                  rate:
+                    type: number
+                    description: Rate used in combination with rating units to calculate charge. This is a required field.
+                  code:
+                    type: string
+                    description: The unique ID for the charge type. This is a required field.
+                  charge:
+                    type: object
+                    properties:
+                      value:
+                        type: number
+                        description: Additional charge amount.
+                      currency:
+                        type: string
+                        description: The currency used for this additional charge.                
+            otherChargeTotal:
+             type: object
+             description: Total amount of Additional charges for this order.
+             properties:
+               value:
+                 type: number
+                 description: Total additional charges for the created order.
+               currency:
+                 type: string
+                 description: The currency used for the additional charges.
+            totalCharges:
+             type: object
+             description: Total amount of charges for this order.
+             properties:
+               value:
+                 type: number
+                 description: Total charges for the created order.
+               currency:
+                 type: string
+                 description: The currency used for the total charges.  
+        allocationCode:
+          type: string
+          description: Unique code used to allocate revenue/expenses associated with the order.
+        revenueCode:
+          type: string
+          description: Revenue code for this order.
+        orderType:
+          type: string
+          description: Order type for this order.
+        createdDate:
+          type: string
+          description: 'The date and time, when the vendor created this order request, in an ISO 8601 standard format, which includes the offset from UTC.'
+          example: '2024-10-18T10:00-07:00'
+        planningComment:
+          type: string
+          description: 'Comments used for internal dispatch and operational planning.'
+  
+    customer:
+      type: object
+      title: Customer
+      properties:
+        code:
+          type: string
+          description: The unique ID assigned to the customer.
+          example: 'PRTPOH'
+        name:
+          type: string
+          description: The name of the customer.
+          example: 'The company name'
+        address1:
+          type: string
+          description: First address of the customer.
+          example: '2495 East Long Avenue'
+        address2: 
+          type: string
+          description: Second address of the customer.
+          example: 'Suite 45'
+        city:
+          type: string
+          description: City of the customer.
+          example: 'HOLLAND'
+        state:
+          type: string
+          description: State of the customer.
+        zip:
+          type: string
+          description: Postal/zip code of the location.
+          
+    location:
+      type: object
+      title: Location
+      properties:
+        code:
+          type: string
+          description: The unique ID assigned to the location.
+          example: 'LOC1'
+        name:
+          type: string
+          description: The name of the location.
+          example: 'The location name'
+        address1:
+          type: string
+          description: First address of the location.
+          example: '2495 East Long Avenue'
+        address2: 
+          type: string
+          description: Second address of the location.
+          example: 'Suite 45'
+        city:
+          type: string
+          description: City of the location.
+          example: 'HOLLAND'
+        state:
+          type: string
+          description: State of the location.
+          example: 'MI'
+        zip:
+          type: string
+          description: Postal/zip code of the location.
+        id:
+          type: string
+          description: A unique identifier for the location.
+        cityId:
+          type: string
+          description: The unique ID of the city.
+        locationName:
+          type: string
+          description: The name of the location.              
+    commodity:
+      type: object
+      title: Commodity
+      properties:
+        code:
+          type: string
+          description: The unique ID assigned to the commodity.
+          example: 'ALUM'
+        name:
+          type: string
+          description: The name of the commodity.
+          example: 'Aluminum'         
+security:
+  - OAuth:
+  
+      - 'orderrequests:create'
